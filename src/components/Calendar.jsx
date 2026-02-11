@@ -1,36 +1,43 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import ScheduleItem from './ScheduleItem'
 
 function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete }) {
   const [currentDate, setCurrentDate] = useState(new Date())
 
-  // useMemo で year と month を再計算
-  const year = useMemo(() => currentDate.getFullYear(), [currentDate])
-  const month = useMemo(() => currentDate.getMonth(), [currentDate])
-  
-  const firstDay = useMemo(() => new Date(year, month, 1), [year, month])
-  const lastDay = useMemo(() => new Date(year, month + 1, 0), [year, month])
-
-  // 前月・次月へ移動
+  // 前月・次月へ移動（修正版）
   const prevMonth = () => {
-    setCurrentDate(new Date(year, month - 1, 1))
+    setCurrentDate(prevDate => {
+      const newDate = new Date(prevDate.getFullYear(), prevDate.getMonth() - 1, 1)
+      console.log('Previous month:', newDate) // デバッグ用
+      return newDate
+    })
   }
 
   const nextMonth = () => {
-    setCurrentDate(new Date(year, month + 1, 1))
+    setCurrentDate(prevDate => {
+      const newDate = new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1)
+      console.log('Next month:', newDate) // デバッグ用
+      return newDate
+    })
   }
+
+  // 毎回再計算されるように修正
+  const year = currentDate.getFullYear()
+  const month = currentDate.getMonth()
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+
+  console.log('Rendering calendar:', year, month + 1) // デバッグ用
 
   // カレンダーの日付配列を生成
   const generateCalendarDays = () => {
     const days = []
-    const startDay = firstDay.getDay() // 月初の曜日（0=日曜）
+    const startDay = firstDay.getDay()
 
-    // 前月の余白
     for (let i = 0; i < startDay; i++) {
       days.push(null)
     }
 
-    // 当月の日付
     for (let i = 1; i <= lastDay.getDate(); i++) {
       days.push(new Date(year, month, i))
     }
@@ -38,7 +45,6 @@ function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete })
     return days
   }
 
-  // 日付の文字列化（YYYY-MM-DD）
   const formatDate = (date) => {
     if (!date) return ''
     const y = date.getFullYear()
@@ -47,24 +53,33 @@ function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete })
     return `${y}-${m}-${d}`
   }
 
-  // 特定の日付のスケジュールを取得
   const getSchedulesForDate = (date) => {
     const dateStr = formatDate(date)
     return schedules.filter((s) => s.date === dateStr)
   }
 
-  const calendarDays = useMemo(() => generateCalendarDays(), [year, month])
+  const calendarDays = generateCalendarDays()
   const today = formatDate(new Date())
 
   return (
     <div className="calendar">
       {/* ヘッダー */}
       <div className="calendar-header">
-        <button onClick={prevMonth}>◀</button>
+        <button 
+          onClick={prevMonth}
+          type="button"
+        >
+          ◀
+        </button>
         <h2>
           {year}年 {month + 1}月
         </h2>
-        <button onClick={nextMonth}>▶</button>
+        <button 
+          onClick={nextMonth}
+          type="button"
+        >
+          ▶
+        </button>
       </div>
 
       {/* 曜日ヘッダー */}
