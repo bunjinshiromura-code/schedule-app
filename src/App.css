@@ -284,26 +284,18 @@ header h1 {
 }
 
 /* レスポンシブ */
-@media (max-width: 640px) {
-  .calendar-grid {
-    gap: 4px;
-  }
-
+@media (max-width: 768px) {
   .calendar-day {
-    min-height: 60px;
-    padding: 4px;
+    min-height: 80px;
+    font-size: 0.85rem;
   }
 
-  .day-number {
-    font-size: 0.8rem;
+  .dialog {
+    width: 95%;
+    padding: 16px;
   }
 
-  .schedule-item {
-    font-size: 0.7rem;
-    padding: 4px;
-  }
-
-  .schedule-time {
-    display: none; /* モバイルでは時間を非表示 */
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
