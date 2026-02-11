@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import ScheduleItem from './ScheduleItem'
 
 function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete }) {
   const [currentDate, setCurrentDate] = useState(new Date())
 
-  // 月の初日と末日を取得
-  const year = currentDate.getFullYear()
-  const month = currentDate.getMonth()
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
+  // useMemo で year と month を再計算
+  const year = useMemo(() => currentDate.getFullYear(), [currentDate])
+  const month = useMemo(() => currentDate.getMonth(), [currentDate])
+  
+  const firstDay = useMemo(() => new Date(year, month, 1), [year, month])
+  const lastDay = useMemo(() => new Date(year, month + 1, 0), [year, month])
 
   // 前月・次月へ移動
   const prevMonth = () => {
@@ -37,7 +38,7 @@ function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete })
     return days
   }
 
-  // 日付の文字列���（YYYY-MM-DD）
+  // 日付の文字列化（YYYY-MM-DD）
   const formatDate = (date) => {
     if (!date) return ''
     const y = date.getFullYear()
@@ -52,7 +53,7 @@ function Calendar({ schedules, onDateClick, onScheduleClick, onScheduleDelete })
     return schedules.filter((s) => s.date === dateStr)
   }
 
-  const calendarDays = generateCalendarDays()
+  const calendarDays = useMemo(() => generateCalendarDays(), [year, month])
   const today = formatDate(new Date())
 
   return (
